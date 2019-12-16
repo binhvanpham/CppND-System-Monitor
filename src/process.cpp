@@ -19,7 +19,7 @@ int Process::Pid() {
 }
 
 // DONE: Return this process's CPU utilization
-float Process::CpuUtilization() {
+float Process::CpuUtilization () const {
 	return LinuxParser::ProcessUtilization(pid_);
 }
 
