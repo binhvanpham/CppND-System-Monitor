@@ -7,7 +7,7 @@
 #include <utility>
 #include <unordered_map>
 #include "linux_parser.h"
-
+//#include "/home/workspace/git/CppND-System-Monitor/include/linux_parser.h"
 using std::stof;
 using std::string;
 using std::to_string;
@@ -195,10 +195,19 @@ float LinuxParser::ProcessUtilization(int pid) {
 
    //  Calculate the utilization
    //-----------------------------
-   long total_time = utime + stime;
-   total_time      = total_time + cutime + cstime;
+   long total_time = utime + stime + cutime + cstime;
    long seconds    = system_uptime - (starttime/sysconf(_SC_CLK_TCK));
    float cpu_pct   = 100.0*((total_time/sysconf(_SC_CLK_TCK))/seconds);
+
+/*
+	std::cout << "system uptime " << system_uptime << std::endl;
+	std::cout << "starttime " << starttime << std::endl;
+	std::cout << "total_time " << total_time << std::endl;
+	std::cout << "sysconf " << sysconf(_SC_CLK_TCK) << std::endl;
+	std::cout << "seconds " << seconds << std::endl;
+*/
+
+
    return cpu_pct;
 }
 

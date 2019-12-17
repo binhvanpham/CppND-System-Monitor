@@ -16,8 +16,7 @@ using std::vector;
 
 // DONE: Return the system's CPU
 Processor& System::Cpu() {
-	Processor cpu;
-	return cpu;
+	return cpu_;
 }
 
 // DONE: Return a container composed of the system's processes
@@ -28,7 +27,8 @@ vector<Process>& System::Processes() {
 		Process thread(pid);
 		processes.push_back(thread);
 	}
-	return processes;	
+	processes_ = processes;
+	return processes_;	
 }
 
 // DONE: Return the system's kernel identifier (string)
