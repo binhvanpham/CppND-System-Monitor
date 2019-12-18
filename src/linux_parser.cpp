@@ -202,7 +202,7 @@ float LinuxParser::ProcessUtilization(int pid) {
    //-----------------------------
    long total_time = utime + stime + cutime + cstime;
    long seconds    = system_uptime - (starttime/sysconf(_SC_CLK_TCK));
-   float cpu_pct   = 100.0*((total_time*1.0/sysconf(_SC_CLK_TCK))/seconds);
+   float cpu_pct   = ((total_time*1.0/sysconf(_SC_CLK_TCK))/seconds);
 
 /*
 	std::cout << "system uptime " << system_uptime << std::endl;
@@ -342,7 +342,7 @@ string LinuxParser::Ram(int pid) {
 			std::istringstream linestream(line);
 			linestream >> first >> second;
 			if (first==string("VmSize")) {
-				float mem_in_M = std::stol(second)*1.00/1000;
+				long mem_in_M = std::stol(second)/1000;
 				return std::to_string(mem_in_M);
 			}
 		}

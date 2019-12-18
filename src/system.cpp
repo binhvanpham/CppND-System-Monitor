@@ -28,7 +28,7 @@ vector<Process>& System::Processes() {
 		processes.push_back(thread);
 	}
 
-	sort(process.begin(),processes.end(),[](const Process& a, const Process& b) {
+	sort(processes.begin(),processes.end(),[](const Process& a, const Process& b) {
 		return (b.CpuUtilization() < a.CpuUtilization());
 	});
 
