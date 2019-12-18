@@ -158,11 +158,8 @@ long LinuxParser::IdleJiffies() { return 0; }
 float LinuxParser::ProcessUtilization(int pid) {
 	string line;
 	string token;
-	vector<std::string> tokens;
-	std::stringstream conv;
-	std::string pid_str;
-	conv << pid;
-	conv >> pid_str;
+	vector<string> tokens;
+	std::string pid_str = std::to_string(pid);
 	std::ifstream filestream(kProcDirectory + pid_str + kStatFilename);
 
 	if (filestream.is_open()) {
@@ -174,6 +171,13 @@ float LinuxParser::ProcessUtilization(int pid) {
 		}
 	}
 
+   long utime     = std::stol(tokens.at(13));
+   long stime     = std::stol(tokens.at(14));
+   long cutime    = std::stol(tokens.at(15));
+   long cstime    = std::stol(tokens.at(16));
+   long starttime = std::stol(tokens.at(21));
+
+/*
    long utime;
    long stime;
    long cutime;
@@ -189,6 +193,7 @@ float LinuxParser::ProcessUtilization(int pid) {
    conv >> cstime;
    conv << tokens[21];
    conv >> starttime;
+*/
 
    long system_uptime = LinuxParser::UpTime();
 
@@ -197,16 +202,21 @@ float LinuxParser::ProcessUtilization(int pid) {
    //-----------------------------
    long total_time = utime + stime + cutime + cstime;
    long seconds    = system_uptime - (starttime/sysconf(_SC_CLK_TCK));
-   float cpu_pct   = 100.0*((total_time/sysconf(_SC_CLK_TCK))/seconds);
+   float cpu_pct   = 100.0*((total_time*1.0/sysconf(_SC_CLK_TCK))/seconds);
 
 /*
 	std::cout << "system uptime " << system_uptime << std::endl;
-	std::cout << "starttime " << starttime << std::endl;
-	std::cout << "total_time " << total_time << std::endl;
-	std::cout << "sysconf " << sysconf(_SC_CLK_TCK) << std::endl;
-	std::cout << "seconds " << seconds << std::endl;
-*/
+	std::cout << "utime         " << utime << std::endl;
+	std::cout << "stime         " << stime << std::endl;
+	std::cout << "cutime        " << cutime << std::endl;
+	std::cout << "cstime        " << cstime << std::endl;
 
+	std::cout << "starttime     " << starttime << std::endl;
+	std::cout << "total_time    " << total_time << std::endl;
+	std::cout << "sysconf       " << sysconf(_SC_CLK_TCK) << std::endl;
+	std::cout << "seconds       " << seconds << std::endl;
+	std::cout << "cpu_pct       " << cpu_pct << std::endl;
+*/
 
    return cpu_pct;
 }
@@ -229,11 +239,7 @@ vector<string> LinuxParser::CpuUtilization() {
 			linestream >> header;
 			if (header==string("cpu")) {
 				while (linestream >> token) {
-					std::stringstream conv;
-					long item;
-					conv << token;
-					conv >> item;
-					tokens.push_back(item);
+					tokens.push_back(std::stol(token));
 				}
 				std::cout << std::endl;
 			}
@@ -258,16 +264,14 @@ vector<string> LinuxParser::CpuUtilization() {
 	long systemall = system + irq + softirq;
 	long virtall   = guest + guest_nice;
 	long total     = usertime + nicetime + systemall + idleall + steal + virtall;
-	long Idle    = idle + iowait;
-	long NonIdle = user + nice + system + irq + softirq + steal;
-	long Total   = Idle+NonIdle;
+	long Idle      = idle + iowait;
+	long NonIdle   = user + nice + system + irq + softirq + steal;
+	long Total     = Idle+NonIdle;
 	float cpu_util = 1.0*NonIdle/Total;
-	std::stringstream conv;
-	conv << cpu_util;
-	std::string util = conv.str();
+
+	std::string util = std::to_string(cpu_util);
 	util += string("%");
 	res.push_back(util);
-	//std::cout << util << std::endl;
 	return res;
 
 } 
@@ -276,14 +280,14 @@ vector<string> LinuxParser::CpuUtilization() {
 int LinuxParser::TotalProcesses() {
 	string line;
 	string first;
-	int second;
+	string second;
 	std::ifstream filestream(kProcDirectory + kStatFilename);
 	if (filestream.is_open()) {
 		while (std::getline(filestream, line)) {
 			std::istringstream linestream(line);
 			linestream >> first >> second;
 			if (first == string("processes")) {
-				return second;
+				return std::stoi(second);
 			}
 		}
 	}
@@ -294,14 +298,14 @@ int LinuxParser::TotalProcesses() {
 int LinuxParser::RunningProcesses() {
 	string line;
 	string first;
-	int second;
+	string second;
 	std::ifstream filestream(kProcDirectory + kStatFilename);
 	if (filestream.is_open()) {
 		while (std::getline(filestream, line)) {
 			std::istringstream linestream(line);
 			linestream >> first >> second;
 			if (first == string("procs_running")) {
-				return second;
+				return std::stoi(second);
 			}
 		}
 	}
@@ -329,11 +333,8 @@ string LinuxParser::Command(int pid) {
 string LinuxParser::Ram(int pid) { 
 	string line;
 	string first;
-	long second;
-	std::stringstream ss;
-	std::string pid_str;
-	ss << pid;
-	ss >> pid_str;
+	string second;
+	std::string pid_str = std::to_string(pid);
 	std::ifstream filestream(kProcDirectory + pid_str + kStatusFilename);
 	if (filestream.is_open()) {
 		while (std::getline(filestream, line)) {
@@ -341,10 +342,8 @@ string LinuxParser::Ram(int pid) {
 			std::istringstream linestream(line);
 			linestream >> first >> second;
 			if (first==string("VmSize")) {
-				float mem_in_M = second*1.00/1000;
-				std::stringstream conv;
-				conv << mem_in_M;
-				return conv.str();
+				float mem_in_M = std::stol(second)*1.00/1000;
+				return std::to_string(mem_in_M);
 			}
 		}
 	}
@@ -355,7 +354,7 @@ string LinuxParser::Ram(int pid) {
 string LinuxParser::Uid(int pid) {
 	string line;
 	string first;
-	int second;
+	string second;
 	std::stringstream ss;
 	std::string pid_str;
 	ss << pid;
@@ -367,9 +366,7 @@ string LinuxParser::Uid(int pid) {
 			std::istringstream linestream(line);
 			linestream >> first >> second;
 			if (first==string("Uid")) {
-				std::stringstream conv;
-				conv << second;
-				return conv.str();
+				return second;
 			}
 		}
 	}
@@ -417,10 +414,7 @@ long LinuxParser::UpTime(int pid) {
 			}
 		}
 	}
-	std::stringstream conv;
-	conv << token;
-	conv >> uptime;
-	//return uptime;
+	uptime = std::stol(token);
 	return uptime/sysconf(_SC_CLK_TCK);
 }
 

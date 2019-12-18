@@ -1,6 +1,8 @@
 #include "ncurses_display.h"
 #include "system.h"
 //#include "linux_parser.cpp"
+//#include "/home/workspace/git/CppND-System-Monitor/src/linux_parser.cpp"
+
 int main() {
 	System system;
 	NCursesDisplay::Display(system);
@@ -22,5 +24,7 @@ int main() {
 		std::cout << pid << " ";
 	}
 	std::cout << std::endl;
+
+	LinuxParser::ProcessUtilization(22);
 */
 }
