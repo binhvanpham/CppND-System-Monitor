@@ -91,26 +91,26 @@ float LinuxParser::MemoryUtilization() {
 	}
 	unordered_iter iMemTotal     = mymap.find("MemTotal");
 	unordered_iter iMemFree      = mymap.find("MemFree");
-	unordered_iter iBuffers      = mymap.find("Buffers");
-	unordered_iter iCached       = mymap.find("Cached");
-	unordered_iter iShmem        = mymap.find("Shmem");
-	unordered_iter iSReclaimable = mymap.find("SReclaimable");
-	unordered_iter iSwapTotal    = mymap.find("SwapTotal");
-	unordered_iter iSwapFree     = mymap.find("SwapFree");
+	//unordered_iter iBuffers      = mymap.find("Buffers");
+	//unordered_iter iCached       = mymap.find("Cached");
+	//unordered_iter iShmem        = mymap.find("Shmem");
+	//unordered_iter iSReclaimable = mymap.find("SReclaimable");
+	//unordered_iter iSwapTotal    = mymap.find("SwapTotal");
+	//unordered_iter iSwapFree     = mymap.find("SwapFree");
 	int MemTotal     = iMemTotal->second;
 	int MemFree      = iMemFree->second;
-	int Buffers      = iBuffers->second;
-	int Cached       = iCached->second;
-	int Shmem        = iShmem->second;
-	int SReclaimable = iSReclaimable->second;
-	int SwapTotal    = iSwapTotal->second;
-	int SwapFree     = iSwapFree->second;
+	//int Buffers      = iBuffers->second;
+	//int Cached       = iCached->second;
+	//int Shmem        = iShmem->second;
+	//int SReclaimable = iSReclaimable->second;
+	//int SwapTotal    = iSwapTotal->second;
+	//int SwapFree     = iSwapFree->second;
 
 	int TotalUsedMemory       = MemTotal-MemFree;
 	//std::cout << MemTotal << " " << MemFree << " " << TotalUsedMemory << std::endl;
-	int CachedMemory          = Cached+SReclaimable;
-	int NonCache_BufferMemory = TotalUsedMemory-(Buffers+CachedMemory);
-	int Swap                  = SwapTotal-SwapFree;
+	//int CachedMemory          = Cached+SReclaimable;
+	//int NonCache_BufferMemory = TotalUsedMemory-(Buffers+CachedMemory);
+	//int Swap                  = SwapTotal-SwapFree;
 
 	//std::cout << MemTotal << " " << MemFree << " " << TotalUsedMemory << std::endl;
 
@@ -134,7 +134,7 @@ long LinuxParser::UpTime() {
 	}
 	return uptime;
 }
-
+/*
 // TODO: Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() {
 
@@ -147,14 +147,14 @@ long LinuxParser::Jiffies() {
 
 // TODO: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
+long LinuxParser::ActiveJiffies(int pid) { return 0; }
 
 // TODO: Read and return the number of active jiffies for the system
 long LinuxParser::ActiveJiffies() { return 0; }
 
 // TODO: Read and return the number of idle jiffies for the system
 long LinuxParser::IdleJiffies() { return 0; }
-
+*/
 float LinuxParser::ProcessUtilization(int pid) {
 	string line;
 	string token;
@@ -218,7 +218,7 @@ float LinuxParser::ProcessUtilization(int pid) {
 	std::cout << "cpu_pct       " << cpu_pct << std::endl;
 */
 
-   return cpu_pct;
+	return cpu_pct;
 }
 
 
@@ -253,24 +253,24 @@ vector<string> LinuxParser::CpuUtilization() {
 	long irq        = tokens[5];
 	long softirq    = tokens[6];
 	long steal      = tokens[7];
-	long guest      = tokens[8];
-	long guest_nice = tokens[9];
+	//long guest      = tokens[8];
+	//long guest_nice = tokens[9];
 
 	//  Calculate the utilization
 	//-----------------------------
-	long usertime  = user - guest;
-	long nicetime  = nice - guest_nice;
-	long idleall   = idle + iowait;
-	long systemall = system + irq + softirq;
-	long virtall   = guest + guest_nice;
-	long total     = usertime + nicetime + systemall + idleall + steal + virtall;
+	//long usertime  = user - guest;
+	//long nicetime  = nice - guest_nice;
+	//long idleall   = idle + iowait;
+	//long systemall = system + irq + softirq;
+	//long virtall   = guest + guest_nice;
+	//long total     = usertime + nicetime + systemall + idleall + steal + virtall;
 	long Idle      = idle + iowait;
 	long NonIdle   = user + nice + system + irq + softirq + steal;
 	long Total     = Idle+NonIdle;
 	float cpu_util = 1.0*NonIdle/Total;
 
 	std::string util = std::to_string(cpu_util);
-	util += string("%");
+	//util += string("%");
 	res.push_back(util);
 	return res;
 
@@ -291,6 +291,7 @@ int LinuxParser::TotalProcesses() {
 			}
 		}
 	}
+	return false;
 }
 
 // DONE: Read and return the number of running processes
@@ -309,22 +310,22 @@ int LinuxParser::RunningProcesses() {
 			}
 		}
 	}
+	return false;
 }
 
 // DONE: Read and return the command associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Command(int pid) {
-   string line;
-   std::stringstream ss;
-   std::string pid_str;
-   ss << pid;
-   ss >> pid_str;
-   std::ifstream filestream(kProcDirectory + pid_str + kCmdlineFilename);
-   if (filestream.is_open()) {
-      while (std::getline(filestream, line)) {
+	string line;
+	std::stringstream ss;
+	std::string pid_str = std::to_string(pid);
+	std::ifstream filestream(kProcDirectory + pid_str + kCmdlineFilename);
+	if (filestream.is_open()) {
+		while (std::getline(filestream, line)) {
 			return line;
-      }
-   }
+		}
+	}
+	return false;
 }
 
 
@@ -347,6 +348,7 @@ string LinuxParser::Ram(int pid) {
 			}
 		}
 	}
+	return false;
 }
 
 // DONE: Read and return the user ID associated with a process
@@ -370,6 +372,7 @@ string LinuxParser::Uid(int pid) {
 			}
 		}
 	}
+	return false;
 }
 				
 // DONE: Read and return the user associated with a process
@@ -391,6 +394,7 @@ string LinuxParser::User(int pid) {
 			}
 		}
 	}
+	return false;
 }
 
 // DONE: Read and return the uptime of a process

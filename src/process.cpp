@@ -46,7 +46,5 @@ long int Process::UpTime() {
 // DONE: Overload the "less than" comparison operator for Process objects
 // REMOVE: [[maybe_unused]] once you define the function
 bool Process::operator<(Process const & a) const {
-	if (CpuUtilization() < a.CpuUtilization())
-		return true;
-	return false;
+	return (CpuUtilization() < a.CpuUtilization());
 }

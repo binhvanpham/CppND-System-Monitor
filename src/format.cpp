@@ -17,6 +17,10 @@ string Format::ElapsedTime(long seconds) {
 	int mins  = seconds/60;
 	seconds   = seconds%60;
 
+	//char timestamp[10];
+	//sprintf(timestamp,"%02d:%02d:%02ld",hours,mins,seconds);
+	//return timestamp;
+
 	std::stringstream ss;
 	ss << std::setfill('0') << std::setw(2) << hours << ':';
 	ss << std::setfill('0') << std::setw(2) << mins << ':';
