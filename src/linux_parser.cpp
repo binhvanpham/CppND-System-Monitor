@@ -291,7 +291,7 @@ int LinuxParser::TotalProcesses() {
 			}
 		}
 	}
-	return false;
+	return 0;
 }
 
 // DONE: Read and return the number of running processes
@@ -310,7 +310,7 @@ int LinuxParser::RunningProcesses() {
 			}
 		}
 	}
-	return false;
+	return 0;
 }
 
 // DONE: Read and return the command associated with a process
@@ -325,7 +325,7 @@ string LinuxParser::Command(int pid) {
 			return line;
 		}
 	}
-	return false;
+	return "";
 }
 
 
@@ -348,7 +348,7 @@ string LinuxParser::Ram(int pid) {
 			}
 		}
 	}
-	return false;
+	return "";
 }
 
 // DONE: Read and return the user ID associated with a process
@@ -372,7 +372,7 @@ string LinuxParser::Uid(int pid) {
 			}
 		}
 	}
-	return false;
+	return "";
 }
 				
 // DONE: Read and return the user associated with a process
@@ -394,7 +394,7 @@ string LinuxParser::User(int pid) {
 			}
 		}
 	}
-	return false;
+	return "";
 }
 
 // DONE: Read and return the uptime of a process
